@@ -65,8 +65,8 @@ class CartProvider with ChangeNotifier {
 
   int get itemCount => _items.fold(0, (total, current) => total + current.quantity);
   double get subtotal => _items.fold(0.0, (total, current) => total + (current.price * current.quantity));
-  double get vat => subtotal * 0.12;
-  double get totalPriceWithVat => subtotal + vat;
+  double get vat => subtotal * 0.12 / 1.12;
+  double get totalPriceWithVat => subtotal;
 
   void addItem(String id, String name, double price, [int quantity = 1]) {
     var index = _items.indexWhere((item) => item.id == id);

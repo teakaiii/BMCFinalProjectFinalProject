@@ -11,39 +11,37 @@ class CartScreen extends StatelessWidget {
     final cart = Provider.of<CartProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Cart'),
-      ),
+      appBar: AppBar(title: const Text('Your Cart')),
       body: Column(
         children: [
           Expanded(
             child: cart.items.isEmpty
                 ? const Center(child: Text('Your cart is empty.'))
                 : ListView.builder(
-              itemCount: cart.items.length,
-              itemBuilder: (context, index) {
-                final cartItem = cart.items[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text(cartItem.name[0]),
+                    itemCount: cart.items.length,
+                    itemBuilder: (context, index) {
+                      final cartItem = cart.items[index];
+                      return ListTile(
+                        leading: CircleAvatar(child: Text(cartItem.name[0])),
+                        title: Text(cartItem.name),
+                        subtitle: Text('Qty: \${cartItem.quantity}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '₱\${(cartItem.price * cartItem.quantity).toStringAsFixed(2)}',
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                cart.removeItem(cartItem.id);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  title: Text(cartItem.name),
-                  subtitle: Text('Qty: ${cartItem.quantity}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('₱${(cartItem.price * cartItem.quantity).toStringAsFixed(2)}'),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          cart.removeItem(cartItem.id);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
           ),
           Card(
             margin: const EdgeInsets.all(16),
@@ -54,26 +52,31 @@ class CartScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Subtotal:', style: TextStyle(fontSize: 16)),
-                      Text('₱${cart.subtotal.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16)),
+                      const Text(
+                        'Total:',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '₱\${cart.totalPriceWithVat.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('VAT (12%):', style: TextStyle(fontSize: 16)),
-                      Text('₱${cart.vat.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                  const Divider(height: 20, thickness: 1),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Total:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      const Text('VAT (12%) included:', style: TextStyle(fontSize: 16)),
                       Text(
-                        '₱${cart.totalPriceWithVat.toStringAsFixed(2)}',
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                        '₱\${cart.vat.toStringAsFixed(2)}',
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ],
                   ),
@@ -90,12 +93,14 @@ class CartScreen extends StatelessWidget {
               onPressed: cart.items.isEmpty
                   ? null
                   : () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PaymentScreen(totalAmount: cart.totalPriceWithVat),
-                  ),
-                );
-              },
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PaymentScreen(
+                            totalAmount: cart.totalPriceWithVat,
+                          ),
+                        ),
+                      );
+                    },
               child: const Text('Proceed to Payment'),
             ),
           ),

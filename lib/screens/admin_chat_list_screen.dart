@@ -10,11 +10,20 @@ class AdminChatListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('User Chats')),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('chats').orderBy('lastMessageAt', descending: true).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('chats')
+            .orderBy('lastMessageAt', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) return const Center(child: Text('No chats yet.'));
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No chats yet.'));
+          }
 
           final chats = snapshot.data!.docs;
           return ListView.builder(
@@ -27,16 +36,31 @@ class AdminChatListScreen extends StatelessWidget {
 
               return ListTile(
                 title: Text(userEmail),
-                subtitle: Text(lastMessage, maxLines: 1, overflow: TextOverflow.ellipsis),
+                subtitle: Text(
+                  lastMessage,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: unreadCount > 0
                     ? CircleAvatar(
-                  radius: 12,
-                  backgroundColor: Colors.red,
-                  child: Text('$unreadCount', style: const TextStyle(color: Colors.white, fontSize: 12)),
-                )
+                        radius: 12,
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          '$unreadCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
                     : null,
                 onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => ChatScreen(chatRoomId: chats[index].id, userName: userEmail)),
+                  MaterialPageRoute(
+                    builder: (_) => ChatScreen(
+                      chatRoomId: chats[index].id,
+                      userName: userEmail,
+                    ),
+                  ),
                 ),
               );
             },

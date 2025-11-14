@@ -31,50 +31,64 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: _user == null
           ? const Center(child: Text('Please log in.'))
           : StreamBuilder<QuerySnapshot>(
-        stream: _firestore
-            .collection('notifications')
-            .where('userId', isEqualTo: _user.uid)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('You have no notifications.'));
-          }
+              stream: _firestore
+                  .collection('notifications')
+                  .where('userId', isEqualTo: _user.uid)
+                  .orderBy('createdAt', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text('You have no notifications.'),
+                  );
+                }
 
-          final docs = snapshot.data!.docs;
-          _markNotificationsAsRead(docs);
+                final docs = snapshot.data!.docs;
+                _markNotificationsAsRead(docs);
 
-          return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
-              final timestamp = data['createdAt'] as Timestamp?;
-              final formattedDate = timestamp != null
-                  ? DateFormat('MM/dd/yy hh:mm a').format(timestamp.toDate())
-                  : '';
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    final timestamp = data['createdAt'] as Timestamp?;
+                    final formattedDate = timestamp != null
+                        ? DateFormat(
+                            'MM/dd/yy hh:mm a',
+                          ).format(timestamp.toDate())
+                        : '';
 
-              final bool wasUnread = data['isRead'] == false;
+                    final bool wasUnread = data['isRead'] == false;
 
-              return ListTile(
-                leading: wasUnread
-                    ? const Icon(Icons.circle, color: Colors.deepPurple, size: 12)
-                    : const Icon(Icons.circle_outlined, color: Colors.grey, size: 12),
-                title: Text(
-                  data['title'] ?? 'No Title',
-                  style: TextStyle(
-                    fontWeight: wasUnread ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
-                subtitle: Text('${data['body'] ?? ''}\n$formattedDate'),
-                isThreeLine: true,
-              );
-            },
-          );
-        },
-      ),
+                    return ListTile(
+                      leading: wasUnread
+                          ? const Icon(
+                              Icons.circle,
+                              color: Colors.deepPurple,
+                              size: 12,
+                            )
+                          : const Icon(
+                              Icons.circle_outlined,
+                              color: Colors.grey,
+                              size: 12,
+                            ),
+                      title: Text(
+                        data['title'] ?? 'No Title',
+                        style: TextStyle(
+                          fontWeight: wasUnread
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                      subtitle: Text('${data['body'] ?? ''}\n$formattedDate'),
+                      isThreeLine: true,
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }

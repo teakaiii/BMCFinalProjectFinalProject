@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,14 +41,17 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   Future<String?> _uploadImage(XFile image) async {
     try {
-      final ref = _storage.ref().child('product_images').child('${DateTime.now().toIso8601String()}-${image.name}');
+      final ref = _storage
+          .ref()
+          .child('product_images')
+          .child('${DateTime.now().toIso8601String()}-${image.name}');
       final uploadTask = await ref.putFile(File(image.path));
       final url = await uploadTask.ref.getDownloadURL();
       return url;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to upload image: $e')));
       return null;
     }
   }
@@ -59,7 +61,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
     if (_imageFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an image for the product.')),
+        const SnackBar(
+          content: Text('Please select an image for the product.'),
+        ),
       );
       return;
     }
@@ -75,7 +79,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         setState(() {
           _isLoading = false;
         });
-        return; 
+        return;
       }
     }
 
@@ -100,9 +104,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         _imageFile = null;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload product: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to upload product: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -117,9 +121,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Panel'),
-      ),
+      appBar: AppBar(title: const Text('Admin Panel')),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -146,7 +148,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (_) => const AdminChatListScreen()),
+                      builder: (_) => const AdminChatListScreen(),
+                    ),
                   ),
                 ),
               ],
@@ -155,7 +158,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
           const SizedBox(height: 24),
           Text(
             'Add New Product',
-            style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16),
           Card(
@@ -173,18 +178,21 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration:
-                      const InputDecoration(labelText: 'Product Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Product Name',
+                      ),
                       validator: (value) =>
-                      value!.isEmpty ? 'Please enter a name' : null,
+                          value!.isEmpty ? 'Please enter a name' : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(labelText: 'Description'),
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
                       maxLines: 3,
                       validator: (value) =>
-                      value!.isEmpty ? 'Please enter a description' : null,
+                          value!.isEmpty ? 'Please enter a description' : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -202,14 +210,14 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                       },
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // Image Picker UI
                     Container(
                       height: 150,
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey[300]!)
+                        border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: Center(
                         child: _imageFile == null
@@ -238,14 +246,15 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                       onPressed: _isLoading ? null : _uploadProduct,
                       child: _isLoading
                           ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white),
-                        ),
-                      )
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
                           : const Text('Upload Product'),
                     ),
                   ],

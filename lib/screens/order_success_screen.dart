@@ -50,7 +50,7 @@ class OrderSuccessScreen extends StatelessWidget {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
                     // 6. This (route) => false removes all screens behind it
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 },
                 child: const Text('Continue Shopping'),

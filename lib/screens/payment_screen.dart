@@ -31,13 +31,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const OrderSuccessScreen()),
-              (route) => false,
+          (route) => false,
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to place order: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to place order: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -52,9 +52,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final String formattedTotal = '₱${widget.totalAmount.toStringAsFixed(2)}';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Confirm Payment'),
-      ),
+      appBar: AppBar(title: const Text('Confirm Payment')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -66,7 +64,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
             Text(
               formattedTotal,
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
             ),
             const SizedBox(height: 24),
             const Divider(),
@@ -116,8 +118,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
               onPressed: _isLoading ? null : _processPayment,
               child: _isLoading
                   ? const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              )
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
                   : Text('Pay Now ($formattedTotal)'),
             ),
           ],

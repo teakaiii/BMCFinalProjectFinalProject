@@ -44,8 +44,9 @@ class _LoginScreenState extends State<LoginScreen> {
         // Clear the stack so HomeScreen becomes the root
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-              builder: (_) => HomeScreen(user: _auth.currentUser)),
-              (route) => false,
+            builder: (_) => HomeScreen(user: _auth.currentUser),
+          ),
+          (route) => false,
         );
       }
     } on FirebaseAuthException catch (e) {
@@ -57,10 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     } catch (e) {
       print(e);
@@ -90,10 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 60),
-                  Image.asset(
-                    'assets/images/app_logo.png',
-                    height: 80,
-                  ),
+                  Image.asset('assets/images/app_logo.png', height: 80),
                   const SizedBox(height: 20),
                   Text(
                     'Welcome Back',
@@ -151,14 +146,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _isLoading ? null : _login,
                     child: _isLoading
                         ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
                         : const Text('LOGIN'),
                   ),
                   const SizedBox(height: 20),

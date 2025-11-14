@@ -47,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUser = widget.user;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -60,9 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
               isLabelVisible: cart.itemCount > 0,
               child: IconButton(
                 icon: const Icon(Icons.shopping_bag_outlined),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const CartScreen()),
-                ),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const CartScreen())),
               ),
             ),
           ),
@@ -70,11 +69,17 @@ class _HomeScreenState extends State<HomeScreen> {
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'profile') {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
               } else if (value == 'orders') {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrderHistoryScreen()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
+                );
               } else if (value == 'admin') {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminPanelScreen()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
+                );
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -121,30 +126,38 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           final products = snapshot.data!.docs;
-          return GridView.builder(
-            padding: const EdgeInsets.all(16.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.7,
-            ),
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              final productDoc = products[index];
-              final productData = productDoc.data()! as Map<String, dynamic>;
-              return ProductCard(
-                productName: productData['name'],
-                price: productData['price'],
-                imageUrl: productData['imageUrl'],
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ProductDetailScreen(
-                      productData: productData,
-                      productId: productDoc.id,
-                    ),
-                  ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+              final cardWidth = (constraints.maxWidth - (16 * (crossAxisCount + 1))) / crossAxisCount;
+              final cardHeight = cardWidth / 0.7; // Maintain aspect ratio
+
+              return GridView.builder(
+                padding: const EdgeInsets.all(16.0),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: cardWidth / cardHeight,
                 ),
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final productDoc = products[index];
+                  final productData = productDoc.data()! as Map<String, dynamic>;
+                  return ProductCard(
+                    productName: productData['name'],
+                    price: productData['price'],
+                    imageUrl: productData['imageUrl'],
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ProductDetailScreen(
+                          productData: productData,
+                          productId: productDoc.id,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
@@ -152,32 +165,30 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: _userRole == 'user'
           ? StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('chats')
-            .doc(currentUser!.uid)
-            .snapshots(),
-        builder: (context, snapshot) {
-          int unreadCount = 0;
-          if (snapshot.hasData && snapshot.data!.exists) {
-            final data =
-            snapshot.data!.data() as Map<String, dynamic>?;
-            unreadCount = data?['unreadByUserCount'] ?? 0;
-          }
-          return FloatingActionButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) =>
-                    ChatScreen(chatRoomId: currentUser.uid),
-              ),
-            ),
-            child: Badge(
-              label: Text('$unreadCount'),
-              isLabelVisible: unreadCount > 0,
-              child: const Icon(Icons.support_agent_outlined),
-            ),
-          );
-        },
-      )
+              stream: FirebaseFirestore.instance
+                  .collection('chats')
+                  .doc(currentUser!.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                int unreadCount = 0;
+                if (snapshot.hasData && snapshot.data!.exists) {
+                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+                  unreadCount = data?['unreadByUserCount'] ?? 0;
+                }
+                return FloatingActionButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ChatScreen(chatRoomId: currentUser.uid),
+                    ),
+                  ),
+                  child: Badge(
+                    label: Text('$unreadCount'),
+                    isLabelVisible: unreadCount > 0,
+                    child: const Icon(Icons.support_agent_outlined),
+                  ),
+                );
+              },
+            )
           : null,
     );
   }

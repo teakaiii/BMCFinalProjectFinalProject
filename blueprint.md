@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the structure, features, and design of the Flutter eCommerce application. It serves as a single source of truth for the project's current state and future development plans.
+This document outlines the structure and features of the fully functional Flutter eCommerce application. The application has been reverted to its original, default UI while retaining all backend functionality.
 
 ## Implemented Features
 
@@ -10,30 +10,27 @@ This document outlines the structure, features, and design of the Flutter eComme
 
 - **Firebase Core:** The application is connected to a Firebase project.
 - **Firebase Authentication:** User authentication is handled via Firebase.
-- **Cloud Firestore:** The app uses Firestore as its primary database.
-- **Firebase Options:** The `firebase_options.dart` file is configured for both web and Android platforms.
+- **Cloud Firestore:** The app uses Firestore as its primary database for products and user roles.
+- **Firebase Options:** The `firebase_options.dart` file is configured.
 
-### VAT Calculation
+### Core Functionality
 
-- **Inclusive VAT:** The VAT is now inclusive in the item prices. The `cart_provider.dart` file has been updated to reflect this change. The `subtotal` now represents the total price including VAT, and the `vat` is extracted from the `subtotal`.
+- **Product Display:** The app fetches products from Firestore and displays them in a grid on the home screen.
+- **Product Detail:** Users can tap a product to view a detailed screen with a description and an "Add to Cart" button.
+- **Shopping Cart:** A functional shopping cart allows users to add, remove, and adjust the quantity of items. It also displays the total price.
+- **User Profile:** A profile screen displays the user's email and a sign-out button.
+- **Admin Panel:** An admin panel allows users with the 'admin' role to add, edit, and delete products.
+
+### UI and Theming
+
+- **Default Theme:** The app uses the default Flutter theme with a blue primary swatch.
+- **Basic Navigation:** The app has a simple bottom navigation bar for Home, Cart, and Profile.
 
 ### Project Structure
 
-- The project follows a standard Flutter structure.
-- A `providers` directory contains state management classes.
-- A `screens` directory holds the application's different pages.
-- A `theme` directory defines the app's visual styling.
-- A `widgets` directory contains reusable UI components.
-
-### Design and Theming
-
-- The app uses a custom color palette and typography.
-- It leverages the `google_fonts` package for a modern look and feel.
-- The UI is built with Material Design 3 components.
-- The app is responsive and adapts to different screen sizes.
+- The project follows a standard Flutter structure with separate directories for providers, screens, and widgets.
 
 ## Current Plan
 
-- **Inclusive VAT:** The current task is to make the VAT inclusive in the order summary.
-- **Logic Update:** I have updated the `cart_provider.dart` to calculate the VAT from the total price, making it inclusive.
-- **Next Steps:** I will now verify the changes in the UI and ensure the order summary displays the correct values.
+- **Project Complete:** The application is now a fully functional eCommerce app with all the features outlined above and the original, default Flutter UI.
+- **Next Steps:** Awaiting new instructions.

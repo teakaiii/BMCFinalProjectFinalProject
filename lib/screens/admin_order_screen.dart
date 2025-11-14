@@ -12,7 +12,11 @@ class AdminOrderScreen extends StatefulWidget {
 class _AdminOrderScreenState extends State<AdminOrderScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _updateOrderStatus(String orderId, String newStatus, String userId) async {
+  Future<void> _updateOrderStatus(
+    String orderId,
+    String newStatus,
+    String userId,
+  ) async {
     try {
       await _firestore.collection('orders').doc(orderId).update({
         'status': newStatus,
@@ -28,13 +32,13 @@ class _AdminOrderScreenState extends State<AdminOrderScreen> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Order status updated!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Order status updated!')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update status: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to update status: $e')));
     }
   }
 
@@ -42,7 +46,13 @@ class _AdminOrderScreenState extends State<AdminOrderScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) {
-        const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+        const statuses = [
+          'Pending',
+          'Processing',
+          'Shipped',
+          'Delivered',
+          'Cancelled',
+        ];
 
         return AlertDialog(
           title: const Text('Update Order Status'),
@@ -51,7 +61,9 @@ class _AdminOrderScreenState extends State<AdminOrderScreen> {
             children: statuses.map((status) {
               return ListTile(
                 title: Text(status),
-                trailing: currentStatus == status ? const Icon(Icons.check) : null,
+                trailing: currentStatus == status
+                    ? const Icon(Icons.check)
+                    : null,
                 onTap: () {
                   _updateOrderStatus(orderId, status, userId);
                   Navigator.of(dialogContext).pop();
@@ -73,9 +85,7 @@ class _AdminOrderScreenState extends State<AdminOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Orders'),
-      ),
+      appBar: AppBar(title: const Text('Manage Orders')),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('orders')
@@ -105,7 +115,8 @@ class _AdminOrderScreenState extends State<AdminOrderScreen> {
               final String userId = orderData['userId'] ?? 'Unknown User';
 
               return GestureDetector(
-                onTap: () => _showStatusDialog(order.id, orderData['status'], userId),
+                onTap: () =>
+                    _showStatusDialog(order.id, orderData['status'], userId),
                 child: OrderCard(orderData: orderData, orderId: order.id),
               );
             },

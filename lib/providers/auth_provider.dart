@@ -26,7 +26,10 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _checkAdminRole(String uid) async {
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
       if (userDoc.exists) {
         _isAdmin = userDoc.data()?['role'] == 'admin';
       } else {

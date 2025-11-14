@@ -17,12 +17,7 @@ class CartItem {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'price': price,
-      'quantity': quantity,
-    };
+    return {'id': id, 'name': name, 'price': price, 'quantity': quantity};
   }
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
@@ -46,11 +41,11 @@ class CartProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   CartProvider() {
-    print('CartProvider created.');
+    // debugPrint('CartProvider created.');
   }
 
   void initializeAuthListener() {
-    print('CartProvider auth listener initialized');
+    // debugPrint('CartProvider auth listener initialized');
     _authSubscription = _auth.authStateChanges().listen((User? user) {
       if (user == null) {
         _userId = null;
@@ -63,8 +58,12 @@ class CartProvider with ChangeNotifier {
     });
   }
 
-  int get itemCount => _items.fold(0, (total, current) => total + current.quantity);
-  double get subtotal => _items.fold(0.0, (total, current) => total + (current.price * current.quantity));
+  int get itemCount =>
+      _items.fold(0, (total, current) => total + current.quantity);
+  double get subtotal => _items.fold(
+    0.0,
+    (total, current) => total + (current.price * current.quantity),
+  );
   double get vat => subtotal * 0.12 / 1.12;
   double get totalPriceWithVat => subtotal;
 
@@ -73,7 +72,9 @@ class CartProvider with ChangeNotifier {
     if (index != -1) {
       _items[index].quantity += quantity;
     } else {
-      _items.add(CartItem(id: id, name: name, price: price, quantity: quantity));
+      _items.add(
+        CartItem(id: id, name: name, price: price, quantity: quantity),
+      );
     }
     _saveCart();
     notifyListeners();
@@ -108,7 +109,9 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<void> placeOrder() async {
-    if (_userId == null || _items.isEmpty) throw Exception('Cart is empty or user is not logged in.');
+    if (_userId == null || _items.isEmpty) {
+      throw Exception('Cart is empty or user is not logged in.');
+    }
 
     try {
       final cartData = _items.map((item) => item.toJson()).toList();
@@ -131,9 +134,11 @@ class CartProvider with ChangeNotifier {
     _items = [];
     if (_userId != null) {
       try {
-        await _firestore.collection('userCarts').doc(_userId).set({'cartItems': []});
+        await _firestore.collection('userCarts').doc(_userId).set({
+          'cartItems': [],
+        });
       } catch (e) {
-        print('Error clearing Firestore cart: $e');
+        debugPrint('Error clearing Firestore cart: $e');
       }
     }
     notifyListeners();
@@ -161,9 +166,11 @@ class CartProvider with ChangeNotifier {
 
     try {
       final cartData = _items.map((item) => item.toJson()).toList();
-      await _firestore.collection('userCarts').doc(_userId).set({'cartItems': cartData});
+      await _firestore.collection('userCarts').doc(_userId).set({
+        'cartItems': cartData,
+      });
     } catch (e) {
-      print('Error saving cart: $e');
+      debugPrint('Error saving cart: $e');
     }
   }
 
